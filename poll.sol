@@ -46,7 +46,7 @@ contract Poll{
         for (uint i; i < candidates.length; i++){
             str = append(str, candidates[i].name);
             if (i < candidates.length - 1)
-                str = append(str, ',');
+                str = append(str, ', ');
         }
         return str;
     }
@@ -56,5 +56,39 @@ contract Poll{
         return string(abi.encodePacked(a, b));
     }
 
+    function Vote(uint candidatenum) public{
+        require(candidatenum>=0 && candidatenum < candidates.length, 'out of number of candidates');
+        candidates[candidatenum].votes++;
+    }
 
+    function showVotes() public view returns(string memory){
+        string memory str = '';
+        for (uint i; i < candidates.length; i++){
+            str = append(str, candidates[i].name);
+            str = append(str,': ');
+            str = append(str, uint2str(candidates[i].votes));
+            if (i < candidates.length - 1)
+                str = append(str, ', ');
+        }
+        return str;
+    }
+
+    function uint2str(uint _i) private pure returns (string memory _uintAsString) {
+    if (_i == 0) {
+        return "0";
+    }
+    uint j = _i;
+    uint len;
+    while (j != 0) {
+        len++;
+        j /= 10;
+    }
+    bytes memory bstr = new bytes(len);
+    uint k = len - 1;
+    while (_i != 0) {
+        bstr[k--] = byte(uint8(48 + _i % 10));
+        _i /= 10;
+    }
+    return string(bstr);
+}
 }
