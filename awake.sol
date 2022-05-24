@@ -4,12 +4,11 @@ contract Awake{
     address owner;
     // address[] members; 
     // address[] awakes; 
-    uint memberCount = 0;
-    uint awakeCount = 0;
-    uint share = 0;
+    uint public memberCount = 0;
+    uint public awakeCount = 0;
+    uint public share = 0;
     uint wakeTime;
     uint duration;
-    bytes x;
 
     struct Member{
         bool member;
@@ -27,7 +26,7 @@ contract Awake{
     function IamIn() public payable{
         require(msg.value == 1e18, 'pay exactly 1 Ether');
         require(!members[msg.sender].member,'you are already in!');
-        require(now < wakeTime); 
+        require(now < wakeTime); //before 4:00 am
 
         // bool found = false;
         // for (uint i = 0; i < members.length; i++)
@@ -36,7 +35,6 @@ contract Awake{
         //         break;
         //     }
         // require(!found);
-        require(true);//before 4:00 am
         // members.push(msg.sender);
         members[msg.sender].awake = false;
         members[msg.sender].member = true;
@@ -45,7 +43,8 @@ contract Awake{
  
     function IamAwake() public{
         require(now > wakeTime && now < wakeTime+duration);//between 4:00 and 4:05 am
-        require(members[msg.sender].member,'you are not in the list');
+        require(members[msg.sender].member,'you have not registered');
+        require(! members[msg.sender].awake,'you are already awaken');
         // bool found = false;
         // for (uint i = 0; i < members.length; i++)
         //     if (msg.sender == members[i]){
@@ -55,6 +54,7 @@ contract Awake{
         // require(found, 'you are not in the list');
         // awakes.push(msg.sender);
         members[msg.sender].awake = true;
+
         awakeCount++;
     }
 
