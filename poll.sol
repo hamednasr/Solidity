@@ -1,43 +1,5 @@
 pragma solidity ^0.5.1;
-
-library Tools{
-    
-    function equalstrings (string memory a, string memory b) 
-    internal pure returns(bool){
-        if (bytes(a).length != bytes(b).length)
-            return false;
-        else
-            for (uint i=0; i < bytes(a).length; i++){
-                if (bytes(a)[i] != bytes(b)[i])
-                    return false;
-            }
-            return true;
-    }
-
-    function append(string memory a, string memory b)
-    internal pure returns (string memory) {
-        return string(abi.encodePacked(a, b));
-    }
-
-    function uint2str(uint _i) internal pure returns (string memory _uintAsString) {
-    if (_i == 0) {
-        return "0";
-    }
-    uint j = _i;
-    uint len;
-    while (j != 0) {
-        len++;
-        j /= 10;
-    }
-    bytes memory bstr = new bytes(len);
-    uint k = len - 1;
-    while (_i != 0) {
-        bstr[k--] = byte(uint8(48 + _i % 10));
-        _i /= 10;
-    }
-    return string(bstr);
-    }
-}
+import './tools.sol';
 
 contract Poll{
     address public owner;
@@ -89,6 +51,7 @@ contract Poll{
 
     function startPoll() public isOwner() {
         require(!pollStarted,'poll has already started!');
+        require(candidates.length >= 2);
         pollStarted = true;
     }
 
@@ -118,6 +81,18 @@ contract Poll{
                 str = Tools.append(str, ', ');
         }
         return str;
+    }
+
+    function showWinner () public view isOwner() returns(string memory)  {
+        require(pollFinished,'poll has not finished yet!');
+        uint largest = 0;
+        uint index;
+        for(uint i = 0; i < candidates.length; i++)
+            if(candidates[i].votes > largest){
+                largest = candidates[i].votes;
+                index = i;
+            } 
+        return candidates[index].name;
     }
 
 }
