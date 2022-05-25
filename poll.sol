@@ -2,13 +2,15 @@ pragma solidity ^0.5.1;
 import './tools.sol';
 
 contract Poll{
+
     address public owner;
+
     struct Candidate{
         string name;
         uint votes;
     }
-
     Candidate[] candidates;
+
     mapping(address => bool) voters;
     bool pollStarted = false;
     bool pollFinished = false;
@@ -83,16 +85,39 @@ contract Poll{
         return str;
     }
 
-    function showWinner () public view isOwner() returns(string memory)  {
+    function showWinner () public view returns(string memory)  {
         require(pollFinished,'poll has not finished yet!');
         uint largest = 0;
-        uint index;
-        for(uint i = 0; i < candidates.length; i++)
+        Candidate memory _winner;
+        Candidate[] memory winner;
+        string memory str;
+        uint j = 0;
+
+        for(uint i = 0; i < candidates.length; i++){
+            j++;
             if(candidates[i].votes > largest){
                 largest = candidates[i].votes;
-                index = i;
+                _winner.votes = largest;
+                _winner.name = candidates[i].name;
+                winner[j]= _winner;
             } 
-        return candidates[index].name;
+
+            else if (candidates[i].votes == largest){
+                j++;
+                _winner.votes = largest;
+                _winner.name = candidates[i].name;
+                winner[j]= _winner;
+            }
+        }
+        
+        
+        for (uint i = 0; i < winner.length; i++){
+            
+            str = Tools.append(winner[i].name,':',Tools.uint2str(winner[i].votes));
+            str = Tools.append(str,',');
+        }
+
+        return str;
     }
 
 }
