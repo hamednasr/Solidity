@@ -1,15 +1,55 @@
 pragma solidity ^0.5.1;
-contract Poll{
 
+contract Tools{
+    function equalstrings (string memory a, string memory b) 
+    internal pure returns(bool){
+        if (bytes(a).length != bytes(b).length)
+            return false;
+        else
+            for (uint i=0; i < bytes(a).length; i++){
+                if (bytes(a)[i] != bytes(b)[i])
+                    return false;
+            }
+            return true;
+    }
+
+    function append(string memory a, string memory b)
+    internal pure returns (string memory) {
+        return string(abi.encodePacked(a, b));
+    }
+
+    function uint2str(uint _i) internal pure returns (string memory _uintAsString) {
+    if (_i == 0) {
+        return "0";
+    }
+    uint j = _i;
+    uint len;
+    while (j != 0) {
+        len++;
+        j /= 10;
+    }
+    bytes memory bstr = new bytes(len);
+    uint k = len - 1;
+    while (_i != 0) {
+        bstr[k--] = byte(uint8(48 + _i % 10));
+        _i /= 10;
+    }
+    return string(bstr);
+    }
+}
+
+contract Poll is Tools{
     address public owner;
     struct Candidate{
         string name;
         uint votes;
     }
+
     Candidate[] candidates;
     mapping(address => bool) voters;
     bool pollStarted = false;
     bool pollFinished = false;
+
     modifier isOwner() {
         require(msg.sender == owner, 'you are not the owner!');
         _;
@@ -28,18 +68,6 @@ contract Poll{
         candidates.push(_candidate);
     }
 
-    function equalstrings (string memory a, string memory b) 
-    private pure returns(bool){
-        if (bytes(a).length != bytes(b).length)
-            return false;
-        else
-            for (uint i=0; i < bytes(a).length; i++){
-                if (bytes(a)[i] != bytes(b)[i])
-                    return false;
-            }
-            return true;
-    }
-
     function isNameRepeated(string memory name) private view returns(bool){
         for (uint i; i < candidates.length; i++)
             if (equalstrings(candidates[i].name, name))
@@ -56,11 +84,6 @@ contract Poll{
                 str = append(str, ', ');
         }
         return str;
-    }
-
-    function append(string memory a, string memory b)
-    private pure returns (string memory) {
-        return string(abi.encodePacked(a, b));
     }
 
     function startPoll() public isOwner() {
@@ -96,22 +119,4 @@ contract Poll{
         return str;
     }
 
-    function uint2str(uint _i) private pure returns (string memory _uintAsString) {
-    if (_i == 0) {
-        return "0";
-    }
-    uint j = _i;
-    uint len;
-    while (j != 0) {
-        len++;
-        j /= 10;
-    }
-    bytes memory bstr = new bytes(len);
-    uint k = len - 1;
-    while (_i != 0) {
-        bstr[k--] = byte(uint8(48 + _i % 10));
-        _i /= 10;
-    }
-    return string(bstr);
-}
 }
