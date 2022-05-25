@@ -10,15 +10,17 @@ contract Poll{
     mapping(address => bool) voters;
     bool pollStarted = false;
     bool pollFinished = false;
-    
+    modifier isOwner() {
+        require(msg.sender == owner, 'you are not the owner!');
+        _;
+    }
 
     constructor() public{
         owner = msg.sender;
     } 
 
-    function addCandidate(string memory candidateName) public{
+    function addCandidate(string memory candidateName) public isOwner() {
         require(! pollStarted,'the poll has started');
-        require(msg.sender == owner);
         require(! isNameRepeated(candidateName));
         Candidate memory _candidate;
         _candidate.name = candidateName;
@@ -61,16 +63,14 @@ contract Poll{
         return string(abi.encodePacked(a, b));
     }
 
-    function startPoll() public{
+    function startPoll() public isOwner() {
         require(!pollStarted,'poll has already started!');
-        require(msg.sender == owner, 'you are not the owner!');
         pollStarted = true;
     }
 
-    function finishPoll() public{
+    function finishPoll() public isOwner() {
         require(pollStarted,'poll has not started yet!');
         require(! pollFinished,'poll has already finished!');
-        require(msg.sender == owner, 'you are not the owner!');
         pollFinished = true;
     }
 
