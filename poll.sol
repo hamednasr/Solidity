@@ -1,19 +1,23 @@
 pragma solidity ^0.5.1;
 contract Poll{
-    address owner;
+
+    address public owner;
     struct Candidate{
         string name;
         uint votes;
     }
     Candidate[] candidates;
     mapping(address => bool) voters;
+    bool pollStarted = false;
+    bool pollFinished = false;
+    
 
     constructor() public{
         owner = msg.sender;
-        
     } 
 
     function addCandidate(string memory candidateName) public{
+        require(! pollStarted,'the poll has started');
         require(msg.sender == owner);
         require(! isNameRepeated(candidateName));
         Candidate memory _candidate;
@@ -42,6 +46,7 @@ contract Poll{
     }
 
     function showCandidates() public view returns(string memory){
+        require(pollStarted,'the poll is not started yet!');
         string memory str = '';
         for (uint i; i < candidates.length; i++){
             str = append(str, candidates[i].name);
@@ -56,12 +61,30 @@ contract Poll{
         return string(abi.encodePacked(a, b));
     }
 
+    function startPoll() public{
+        require(!pollStarted,'poll has already started!');
+        require(msg.sender == owner, 'you are not the owner!');
+        pollStarted = true;
+    }
+
+    function finishPoll() public{
+        require(pollStarted,'poll has not started yet!');
+        require(! pollFinished,'poll has already finished!');
+        require(msg.sender == owner, 'you are not the owner!');
+        pollFinished = true;
+    }
+
     function Vote(uint candidatenum) public{
-        require(candidatenum>=0 && candidatenum < candidates.length, 'out of number of candidates');
+        require(! voters[msg.sender],'you have voted before!');
+        require(pollStarted,'the poll is not started yet!');
+        require(! pollFinished,'the poll has ended!');
+        require((candidatenum>=0) && (candidatenum < candidates.length), 'out of number of candidates');
         candidates[candidatenum].votes++;
+        voters[msg.sender]=true;
     }
 
     function showVotes() public view returns(string memory){
+        require(pollFinished, 'the poll is not finished yet!');
         string memory str = '';
         for (uint i; i < candidates.length; i++){
             str = append(str, candidates[i].name);
