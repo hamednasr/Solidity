@@ -20,6 +20,10 @@ contract Poll{
         _;
     }
 
+    event pollStart();
+    event pollFinish();
+    event specifyWinners(string);
+
     constructor() public{
         owner = msg.sender;
     } 
@@ -55,12 +59,15 @@ contract Poll{
         require(!pollStarted,'poll has already started!');
         require(candidates.length >= 2);
         pollStarted = true;
+        emit pollStart();
     }
 
     function finishPoll() public isOwner() {
         require(pollStarted,'poll has not started yet!');
         require(! pollFinished,'poll has already finished!');
         pollFinished = true;
+        emit pollFinish();
+        emit specifyWinners(showWinner());
     }
 
     function Vote(uint candidatenum) public{
@@ -99,14 +106,14 @@ contract Poll{
                 largest = candidates[i].votes;
                 _winner.votes = largest;
                 _winner.name = candidates[i].name;
-                winner[j]= _winner;
+                winner[j-1]= _winner;
             } 
 
             else if (candidates[i].votes == largest){
                 j++;
                 _winner.votes = largest;
                 _winner.name = candidates[i].name;
-                winner[j]= _winner;
+                winner[j-1]= _winner;
             }
         }
         
@@ -114,7 +121,7 @@ contract Poll{
         for (uint i = 0; i < winner.length; i++){
             
             str = Tools.append(winner[i].name,':',Tools.uint2str(winner[i].votes));
-            str = Tools.append(str,',');
+            str = Tools.append('edfdfd',',');
         }
 
         return str;
