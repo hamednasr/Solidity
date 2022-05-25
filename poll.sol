@@ -1,6 +1,7 @@
 pragma solidity ^0.5.1;
 
-contract Tools{
+library Tools{
+    
     function equalstrings (string memory a, string memory b) 
     internal pure returns(bool){
         if (bytes(a).length != bytes(b).length)
@@ -38,7 +39,7 @@ contract Tools{
     }
 }
 
-contract Poll is Tools{
+contract Poll{
     address public owner;
     struct Candidate{
         string name;
@@ -70,7 +71,7 @@ contract Poll is Tools{
 
     function isNameRepeated(string memory name) private view returns(bool){
         for (uint i; i < candidates.length; i++)
-            if (equalstrings(candidates[i].name, name))
+            if (Tools.equalstrings(candidates[i].name, name))
                 return true;
         return false;
     }
@@ -79,9 +80,9 @@ contract Poll is Tools{
         require(pollStarted,'the poll is not started yet!');
         string memory str = '';
         for (uint i; i < candidates.length; i++){
-            str = append(str, candidates[i].name);
+            str = Tools.append(str, candidates[i].name);
             if (i < candidates.length - 1)
-                str = append(str, ', ');
+                str = Tools.append(str, ', ');
         }
         return str;
     }
@@ -110,11 +111,11 @@ contract Poll is Tools{
         require(pollFinished, 'the poll is not finished yet!');
         string memory str = '';
         for (uint i; i < candidates.length; i++){
-            str = append(str, candidates[i].name);
-            str = append(str,': ');
-            str = append(str, uint2str(candidates[i].votes));
+            str = Tools.append(str, candidates[i].name);
+            str = Tools.append(str,': ');
+            str = Tools.append(str, Tools.uint2str(candidates[i].votes));
             if (i < candidates.length - 1)
-                str = append(str, ', ');
+                str = Tools.append(str, ', ');
         }
         return str;
     }
