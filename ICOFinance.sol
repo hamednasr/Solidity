@@ -25,4 +25,12 @@ contract ICOFinance{
         if ((address(this).balance +msg.value) /shareValue == sharesNeeded)
             EnoughSharesAquired = true;
     }
+
+    function giveRefund() external {
+        require(ShareHolders[msg.sender].shares > 0,'you dont have any shares!');
+        require(now > Deadline,'deadline not reached');
+        require(! EnoughSharesAquired,'refund not possible');
+        ShareHolders[msg.sender].shares = 0; 
+        msg.sender.transfer(ShareHolders[msg.sender].shares * shareValue);
+    }  
 } 
