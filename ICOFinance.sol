@@ -39,6 +39,12 @@ contract ICOFinance{
         return address(this).balance/shareValue;
     }
 
+    function getStatus() external view returns(string memory) {
+        if (!EnoughSharesAquired) return ('fundraising not complete yet!');
+        else if (TransferedtoOwner) return ('fundraising complete and paid to owner');
+        else if (!TransferedtoOwner) return ('fundraising complete and not paid to owner');
+    }
+
     function() external payable{
         require(!EnoughSharesAquired,'maximum number of shares purchased!');
         require(now <= Deadline);
