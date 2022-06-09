@@ -2,9 +2,9 @@ from solcx import compile_standard, install_solc
 import os
 import json
 from web3 import Web3
-# from dotenv import load_dotenv
+from dotenv import load_dotenv
 
-# load_dotenv()
+load_dotenv()
 
 
 with open("./SimpleStorage.sol", "r") as file:
@@ -45,8 +45,8 @@ abi = json.loads(
 # connect to ganache
 w3 = Web3(Web3.HTTPProvider('http://127.0.0.1:7545'))
 chainID = 1337
-MyAddress = '0x0AF09a6e56FAAC1bBd2Aeb7DCe7a7DdAE77Ee6f6'
-PrivateKey = '0x78e3c71899a9c178a5f08857f95439ee2dbedc878969f2dcd085d0f95cafbe57'
+MyAddress = '0xD6063271A197c4979D6697B831aa694041eBCc11'
+PrivateKey = os.getenv('PRIVATE_KEY')
 
 # creat the contract in python
 SimpleStorage = w3.eth.contract(abi=abi, bytecode=bytecode)
@@ -55,7 +55,6 @@ SimpleStorage = w3.eth.contract(abi=abi, bytecode=bytecode)
 nonce = w3.eth.getTransactionCount(MyAddress)
 
 # build the transaction
-
 transaction = SimpleStorage.constructor().buildTransaction(
     {
     "gasPrice": w3.eth.gas_price, 
@@ -65,3 +64,5 @@ transaction = SimpleStorage.constructor().buildTransaction(
     }
 )
 
+#sign the transaction
+signed_tx = w3.eth.account.sign_transaction(transaction,private_key = os.getenv('PRIVATE_KEY'))
