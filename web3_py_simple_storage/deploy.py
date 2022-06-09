@@ -1,13 +1,22 @@
-from solcx import compile_standard
+from solcx import compile_standard, install_solc
+import os
+import json
+# from dotenv import load_dotenv
+
+# load_dotenv()
+
 
 with open("./SimpleStorage.sol", "r") as file:
     simple_storage_file = file.read()
-    print(simple_storage_file)
 
-# compile solidity file
+# We add these two lines that we forgot from the video!
+# print("Installing...")
+# install_solc("0.6.0")
+
+# Solidity source code
 compiled_sol = compile_standard(
     {
-        "language": "solidity",
+        "language": "Solidity",
         "sources": {"SimpleStorage.sol": {"content": simple_storage_file}},
         "settings": {
             "outputSelection": {
@@ -16,7 +25,22 @@ compiled_sol = compile_standard(
                 }
             }
         },
-    }
-        },
+    },
     solc_version="0.6.0",
 )
+
+with open("compiled_code.json", "w") as file:
+    json.dump(compiled_sol, file)
+
+
+# get bytecode
+bytecode = compiled_sol["contracts"]["SimpleStorage.sol"]["SimpleStorage"]["evm"][
+    "bytecode"
+]["object"]
+
+# get abi
+abi = json.loads(
+    compiled_sol["contracts"]["SimpleStorage.sol"]["SimpleStorage"]["metadata"]
+)["output"]["abi"]
+
+print(abi)
