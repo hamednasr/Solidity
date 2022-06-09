@@ -43,10 +43,25 @@ abi = json.loads(
 )["output"]["abi"]
 
 # connect to ganache
-w3 = Web3(Web3.HTTPProvider('HTTP://127.0.0.1:7545'))
-chainID = 5777
+w3 = Web3(Web3.HTTPProvider('http://127.0.0.1:7545'))
+chainID = 1337
 MyAddress = '0x0AF09a6e56FAAC1bBd2Aeb7DCe7a7DdAE77Ee6f6'
 PrivateKey = '0x78e3c71899a9c178a5f08857f95439ee2dbedc878969f2dcd085d0f95cafbe57'
 
 # creat the contract in python
 SimpleStorage = w3.eth.contract(abi=abi, bytecode=bytecode)
+
+# get the latest tranaction
+nonce = w3.eth.getTransactionCount(MyAddress)
+
+# build the transaction
+
+transaction = SimpleStorage.constructor().buildTransaction(
+    {
+    "gasPrice": w3.eth.gas_price, 
+    "chainId": chainID, 
+    "from": MyAddress, 
+    "nonce": nonce, 
+    }
+)
+
