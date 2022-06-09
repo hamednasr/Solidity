@@ -48,3 +48,5 @@ chainID = 5777
 MyAddress = '0x0AF09a6e56FAAC1bBd2Aeb7DCe7a7DdAE77Ee6f6'
 PrivateKey = '0x78e3c71899a9c178a5f08857f95439ee2dbedc878969f2dcd085d0f95cafbe57'
 
+# creat the contract in python
+SimpleStorage = w3.eth.contract(abi=abi, bytecode=bytecode)
