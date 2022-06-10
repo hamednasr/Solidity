@@ -74,7 +74,7 @@ tx_receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
 # working with contract
 simple_storage = w3.eth.contract(address=tx_receipt.contractAddress, abi = abi)
 
-store_transaction = simple_storage.functions.store(16).buildTransaction({
+store_transaction = simple_storage.functions.store(25).buildTransaction({
     "gasPrice": w3.eth.gas_price, 
     "chainId": chainID, 
     "from": MyAddress, 

@@ -1,0 +1,5 @@
+{
+    “python.pythonPath”:“C:\Users\hmdna\anaconda3\envs\blockchain\python.exe”,
+    “python.terminal.activateEnvironment”: true,
+    “terminal.integrated.shell.windows”: “C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe”
+}
