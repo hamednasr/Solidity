@@ -42,10 +42,10 @@ abi = json.loads(
     compiled_sol["contracts"]["SimpleStorage.sol"]["SimpleStorage"]["metadata"]
 )["output"]["abi"]
 
-# connect to ganache
-w3 = Web3(Web3.HTTPProvider('http://127.0.0.1:7545'))
-chainID = 1337
-MyAddress = '0xD6063271A197c4979D6697B831aa694041eBCc11'
+# connect to rinkeby
+w3 = Web3(Web3.HTTPProvider('https://rinkeby.infura.io/v3/9f05f32addce42618726a3b3ea5bb21c'))
+chainID = 4
+MyAddress = '0x589f66aeb872277198acC93c15bE344AF3Abb185'
 PrivateKey = os.getenv('PRIVATE_KEY')
 
 # creat the contract in python
