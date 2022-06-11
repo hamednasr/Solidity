@@ -1,8 +1,7 @@
-from hashlib import new
-from brownie import accounts, config, SimpleStorage
-import os
+from brownie import accounts, config, SimpleStorage, network
+
 def deploy_simple_storage():
-    account = accounts[0]
+    account = get_account()
     # account = accounts.load('david')
     # account = accounts.add(os.getenv('PRIVATE_KEY'))
     # print(account)
@@ -16,6 +15,13 @@ def deploy_simple_storage():
     transaction.wait(1)
     updated_value = simple_storage.retrieve()    
     print(f'updated value: {updated_value}')
+
+def get_account():
+    if network.show_active() == 'development':
+        account = accounts[0]
+    else:
+        account = accounts.add(config['wallets']['from_key'])
+    return account
 
 def main():
     deploy_simple_storage()
