@@ -28,6 +28,16 @@ contract FundMe {
         priceFeed = AggregatorV3Interface(_priceFeed);
         owner = msg.sender;
     }
+
+    function getEntranceFee() public view returns (uint256) {
+        // minimumUSD
+        uint256 minimumUSD = 50 * 10**18;
+        uint256 price = getPrice();
+        uint256 precision = 1 * 10**18;
+        // return (minimumUSD * precision) / price;
+        // We fixed a rounding error found in the video by adding one!
+        return ((minimumUSD * precision) / price) + 1;
+    }
     
     function fund() public payable {
     	// 18 digit number to be compared with donated amount 
@@ -38,7 +48,8 @@ contract FundMe {
         addressToAmountFunded[msg.sender] += msg.value;
         funders.push(msg.sender);
     }
-    
+
+   
     //function to get the version of the chainlink pricefeed
     function getVersion() public view returns (uint256){
         return priceFeed.version();

@@ -10,3 +10,7 @@ dotenv: .env
 
 wallets:
   from_key: ${PRIVATE_KEY}
+
+brownie networks:
+  rinkeby:
+    eth_usd_pricefeed: '0x8A753747A1Fa494EC906cE90E9f37563A8AF630e'
