@@ -12,5 +12,11 @@ wallets:
   from_key: ${PRIVATE_KEY}
 
 brownie networks:
+  # default: ganache-local
   rinkeby:
     eth_usd_pricefeed: '0x8A753747A1Fa494EC906cE90E9f37563A8AF630e'
+
+  mainnet-fork:
+    eth_usd_pricefeed: '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419
+'
+
