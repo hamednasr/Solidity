@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
-
+import '@openzeppelin/contracts/ownership/Ownable.sol';
 // interface AggregatorV3Interface {
 //   function decimals() external view returns (uint8);
 
@@ -37,10 +37,19 @@ import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 // }
 
 
-contract Lottery{
+contract Lottery is Ownable{
     
-    address payable[] public players;
+    mapping (address => uint) public addressToAmountPaid;
+    address[] public payers;
     AggregatorV3Interface priceFeed;
+
+    enum LOTTERY_STATE{
+        OPEN,
+        CLOSED,
+        SPECIFYING_WINNER
+    }
+
+    LOTTERY_STATE public lottery_state = 0;
 
     constructor() {
         priceFeed = AggregatorV3Interface(0x8A753747A1Fa494EC906cE90E9f37563A8AF630e);
@@ -48,7 +57,7 @@ contract Lottery{
     /**
      * Returns the latest price
      */
-    function getLatestPrice() public view returns (int) {
+    function getLatestPrice() public view returns (uint) {
         (
             /*uint80 roundID*/,
             int price,
@@ -56,19 +65,33 @@ contract Lottery{
             /*uint timeStamp*/,
             /*uint80 answeredInRound*/
         ) = priceFeed.latestRoundData();
-        return price;
+        return uint(price*1e10);
     }
 
-
-    function getEntranceFee() public{
-        
+    function getConversionRate(uint ethAmount) public view returns (uint){
+        uint ethPrice = getLatestPrice();
+        uint ethAmountInUsd = (ethPrice * ethAmount) / 1e18;
+        // the actual ETH/USD conversation rate, after adjusting the extra 0s.
+        return ethAmountInUsd;
     }
 
-    function startLottery() public{
+    function enter() public payable {
+        require(lottery_state = LOTTERY_STATE.OPEN,'the lottery is closed!');
+        uint minimumUSD = 50 * 1e18;
+    	// 18 digit number to be compared with donated amount , 
+        require(getConversionRate(msg.value) >= minimumUSD, "You need to spend more Ether!");
+        payers.push(msg.sender);
+        addressToAmountPaid[msg.sender] += msg.value;
+    }
+
+    function startLottery() public onlyOwner{
+        lottery_state = LOTTERY_STATE.OPEN;
+
 
     }
 
-    function endLottery() public{
+    function endLottery() public onlyOwner{
+        lottery_state = LOTTERY_STATE.CLOSED;
 
     }
 }
