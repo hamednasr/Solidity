@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
-import '@openzeppelin/contracts/ownership/Ownable.sol';
+// import '@openzeppelin/contracts/ownership/Ownable.sol';
 // interface AggregatorV3Interface {
 //   function decimals() external view returns (uint8);
 
@@ -37,8 +37,8 @@ import '@openzeppelin/contracts/ownership/Ownable.sol';
 // }
 
 
-contract Lottery is Ownable{
-    
+contract Lottery {
+    address public owner;
     mapping (address => uint) public addressToAmountPaid;
     address[] public payers;
     AggregatorV3Interface priceFeed;
@@ -49,9 +49,15 @@ contract Lottery is Ownable{
         SPECIFYING_WINNER
     }
 
-    LOTTERY_STATE public lottery_state = 0;
+    LOTTERY_STATE public lottery_state;
+
+    modifier isowner{
+        require(msg.sender == owner);
+        _;
+    }
 
     constructor() {
+        owner = msg.sender;
         priceFeed = AggregatorV3Interface(0x8A753747A1Fa494EC906cE90E9f37563A8AF630e);
     }
     /**
@@ -76,7 +82,7 @@ contract Lottery is Ownable{
     }
 
     function enter() public payable {
-        require(lottery_state = LOTTERY_STATE.OPEN,'the lottery is closed!');
+        require(lottery_state == LOTTERY_STATE.OPEN,'the lottery is closed!');
         uint minimumUSD = 50 * 1e18;
     	// 18 digit number to be compared with donated amount , 
         require(getConversionRate(msg.value) >= minimumUSD, "You need to spend more Ether!");
@@ -84,13 +90,16 @@ contract Lottery is Ownable{
         addressToAmountPaid[msg.sender] += msg.value;
     }
 
-    function startLottery() public onlyOwner{
+    function startLottery() public isowner() {
+        require(lottery_state == LOTTERY_STATE.CLOSED,'lottery is already open!');
         lottery_state = LOTTERY_STATE.OPEN;
 
 
     }
 
-    function endLottery() public onlyOwner{
+    function endLottery() public isowner() {
+        require(lottery_state == LOTTERY_STATE.OPEN,'lottery is already closed!');
+        
         lottery_state = LOTTERY_STATE.CLOSED;
 
     }
