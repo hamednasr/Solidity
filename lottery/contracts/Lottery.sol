@@ -22,6 +22,7 @@ contract Lottery is VRFConsumerBase {
     uint256 internal fee;    
     uint256 public randomResult;
     address payable recentWinner;
+    uint value;
     
     /**
      * Constructor inherits VRFConsumerBase
@@ -92,7 +93,12 @@ contract Lottery is VRFConsumerBase {
     	// 18 digit number to be compared with donated amount , 
         require(getConversionRate(msg.value) >= minimumUSD, "You need to spend more Ether!");
         payers.push(payable(msg.sender));
-        addressToAmountPaid[msg.sender] += msg.value;
+        addressToAmountPaid[msg.sender] += msg.value; 
+        value = msg.value;
+    }
+
+    function getValue() public view returns(uint){
+        return (value);
     }
 
     function endLottery() public isowner() {

@@ -14,7 +14,13 @@ def start_lottery():
     starting_tx.wait(1)
     print('Lottery started successfully!!')
 
-
+def enter_lottery():
+    account = get_account()
+    lottery = Lottery[-1]
+    value =  lottery.getValue({'from': account})
+    entering_tx = lottery.enter({'from': account, 'value': value})
+    entering_tx.wait(1)
+    print('you are signed up fro the lottery!!')
 
 def main():
     deploy_lottery()
