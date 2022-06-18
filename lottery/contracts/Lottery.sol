@@ -80,6 +80,11 @@ contract Lottery is VRFConsumerBase {
         // the actual ETH/USD conversation rate, after adjusting the extra 0s.
         return ethAmountInUsd;
     }
+    
+    function startLottery() public isowner() {
+        require(lottery_state == LOTTERY_STATE.CLOSED,'lottery is already open!');
+        lottery_state = LOTTERY_STATE.OPEN;
+    }
 
     function enter() public payable {
         require(lottery_state == LOTTERY_STATE.OPEN,'the lottery is closed!');
@@ -88,11 +93,6 @@ contract Lottery is VRFConsumerBase {
         require(getConversionRate(msg.value) >= minimumUSD, "You need to spend more Ether!");
         payers.push(payable(msg.sender));
         addressToAmountPaid[msg.sender] += msg.value;
-    }
-
-    function startLottery() public isowner() {
-        require(lottery_state == LOTTERY_STATE.CLOSED,'lottery is already open!');
-        lottery_state = LOTTERY_STATE.OPEN;
     }
 
     function endLottery() public isowner() {
